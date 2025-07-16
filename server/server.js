@@ -1,0 +1,37 @@
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import mongoose from 'mongoose'
+import cookieParser from 'cookie-parser'
+import productRoutes from './routes/productRoutes.js'
+import userRoutes from './routes/userRoutes.js'
+import cartRoutes from './routes/cartRoutes.js'
+import orderRoutes from './routes/orderRoutes.js'
+
+dotenv.config();
+const app = express();
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true 
+}));
+app.use(express.json())
+app.use(express.static('uploads'))
+app.use(cookieParser())
+
+app.use("/api/product/",productRoutes)
+app.use("/api/user/",userRoutes)
+app.use("/api/cart/",cartRoutes)
+app.use("/api/order/",orderRoutes)
+
+
+mongoose.connect(process.env.MONGO_URL).then(con => {
+    console.log("mongoDB connected");
+    
+})
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, ()=> {
+ console.log("running on port",PORT);
+})
