@@ -1,8 +1,10 @@
 import React from 'react'
 import { FaStar } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
+import { useEcommerce } from '../context/EcommerceContext'
 const RelatedItem = ({p}) => {
 
+      const {url} = useEcommerce()
       const navigate = useNavigate()
   return (
      <div onClick={() => navigate(`/product-detail/${p._id}`)} className="hover:shadow-lg sm:border  hover:-translate-y-0.5 border-gray-200  transition-all">

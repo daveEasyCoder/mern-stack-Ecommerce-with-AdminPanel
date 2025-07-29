@@ -4,8 +4,11 @@ import { AiFillHeart } from 'react-icons/ai';
 
 import { FaEye, FaStar } from 'react-icons/fa'
 import {Link} from 'react-router-dom'
+import { useEcommerce } from '../context/EcommerceContext';
 
 const ProductItem = ({product}) => {
+
+  const {url} = useEcommerce()
 
   return (
      <div

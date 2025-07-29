@@ -5,9 +5,11 @@ import axios from 'axios';
 import Loader from '../components/Loader'
 import defaultProfile from '../src/assets/user.jpg'
 import { Link } from 'react-router-dom';
+import { useEcommerce } from '../context/EcommerceContext';
 
 const Users = () => {
 
+      const {url} = useEcommerce()
        const [users,setUsers] = useState([])
        const [error,setError] = useState("")
        const [loading,setLoading] = useState(false)

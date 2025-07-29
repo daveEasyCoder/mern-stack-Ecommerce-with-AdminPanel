@@ -81,6 +81,7 @@ const AdminProduct = () => {
                                 <th className="px-4 py-3 font-semibold truncate">Action</th>
                             </tr>
                         </thead>
+      
                         <tbody className="text-sm text-gray-500">
                             {products.map((product, index) => (
                                 <tr key={index} className="border-t border-gray-500/20">

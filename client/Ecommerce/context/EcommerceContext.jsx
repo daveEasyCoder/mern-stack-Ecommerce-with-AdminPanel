@@ -1,10 +1,10 @@
 import { createContext,useContext, useEffect, useState } from "react";
 
-const context = createContext(null)
+const EcommerceContext = createContext(null)
 
-export const useEcommerce = () => useContext(context)
+export const useEcommerce = () => useContext(EcommerceContext)
 
-const EcommerceProvider = ({children}) => {
+const EcommerceProvider = ({children = null}) => {
 
     const [products,setProducts] = useState([])
     const [carts,setCarts] = useState([])
@@ -26,8 +26,8 @@ const EcommerceProvider = ({children}) => {
         getStoredProducts()
     },[])
 
-    return <context.Provider value={{url,products,setProducts,carts,setCarts,myOrders,setMyOrders,user,setUser,admin,setAdmin}}>
+    return <EcommerceContext.Provider value={{url,products,setProducts,carts,setCarts,myOrders,setMyOrders,user,setUser,admin,setAdmin}}>
         {children}
-    </context.Provider>
+    </EcommerceContext.Provider>
 }
 export default EcommerceProvider
