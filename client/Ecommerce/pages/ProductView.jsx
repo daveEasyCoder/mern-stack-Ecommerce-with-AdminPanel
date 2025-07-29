@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { FaStar } from 'react-icons/fa'
-import {SyncLoader} from "react-spinners";
 import { MdAdd, MdRemove } from 'react-icons/md';
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios';
 import RelatedItem from '../components/RelatedItem';
 import { useEcommerce } from '../context/EcommerceContext';
+import { toastInfo,toastSuccess } from '../utility/toast';
+import Loader from '../components/Loader';
+
+
 const ProductView = () => {
-    const {id} = useParams()
-  const {setCarts} = useEcommerce()
+  const {id} = useParams()
+  const {setCarts,setUser,url} = useEcommerce()
   const [product,setProduct] = useState(null)
   const [relatedProducts,setRelatedProducts] = useState([])
   const [loading,setLoading] = useState(false)
@@ -31,7 +34,7 @@ const ProductView = () => {
     try{
        
        setLoading(true)
-       const res = await axios.get(`http://localhost:301/api/product/get-each-product/${id}`)
+       const res = await axios.get(`${url}/api/product/get-each-product/${id}`)
        if(res.data.success){
           setProduct(res.data.product)
           setImage(res.data.product.image[0])
@@ -75,17 +78,18 @@ const ProductView = () => {
      if(inStock){
         try { 
             setCartLoading(true)
-            const res = await axios.post(`http://localhost:301/api/cart/add-to-cart/${id}`,{quantity,selectedSize},{withCredentials:true})
+            const res = await axios.post(`${url}/api/cart/add-to-cart/${id}`,{quantity,selectedSize},{withCredentials:true})
             if(res.data.success){
-              setCarts(res.data.cart.items);   
+              setCarts(res.data.cart.items);  
+              toastSuccess("Added to Cart successfully")
             }
               setCartLoading(false)
           } catch (error) {
             setCartLoading(false)
           if(error.response){
               if(error.response.status === 401 || error.response.status === 403){
-                  localStorage.removeItem("user")
                   console.log("you are not authorized")
+                  setUser(null)
                   navigate("/login")
               }
               if(error.response?.data?.message){
@@ -98,11 +102,11 @@ const ProductView = () => {
             }
           }
      }else{
-        alert("out of stock")
+        toastInfo("Out of stock")
      }
   }
 
-  if(loading) return <div className='h-[90vh] flex items-center justify-center flex-col'><SyncLoader className="text-gray-800" size={10} /></div>
+  if(loading) return <Loader />
     
   if(error) return <div className='h-[60vh] flex items-center justify-center text-gray-700'>{error}</div>
   return (
@@ -111,11 +115,11 @@ const ProductView = () => {
             <p className='text-sm mb-8'> <span className='text-gray-500'>Home / Products / {product?.category} /</span> <span className='text-black font-medium'>{product?.name}</span></p>
             <div className='flex flex-col md:flex-row items-stretch gap-3'>
                 <div className='md:w-1/2'>
-                    <div className='w-full bg-gray-200 h-90'><img className='rounded-sm w-full h-full object-cover' src ={`http://localhost:301/productImage/${image}`}  alt="" /></div>
+                    <div className='w-full bg-gray-200 h-90'><img className='rounded-sm w-full h-full object-cover' src ={`${url}/productImage/${image}`}  alt="" /></div>
                     <div className='grid grid-cols-4 gap-2 mt-2'>
                        {
                         product?.image && product?.image?.length &&
-                         product.image.map((img,index) =>  <img key={index} onClick={() => setImage(img)} className='w-full h-32 rounded-sm object-cover' src ={`http://localhost:301/productImage/${img}`}alt="" />)
+                         product.image.map((img,index) => img && <img key={index} onClick={() => setImage(img)} className='w-full h-32 rounded-sm object-cover' src ={`${url}/productImage/${img}`}alt="" />)
                        }
                     </div>
                 </div>
@@ -130,11 +134,11 @@ const ProductView = () => {
                         </span>
     
                         <span className='text-sm text-gray-600'>'{product?.rating}(1243 reviews)</span>
-                        <span className='text-green-600 text-sm font-medium'>in Stock</span>
+                        <span className='text-green-600 text-sm font-medium'>{ leftStock > 0 ? 'in Stock' : 'out of stock' }</span>
                     </div>
                     <div className='flex itmes-center gap-6 mt-8'>
-                        <h1 className='text-3xl text-gray-800 font-bold'>${product?.originalPrice}</h1>
-                        <h1 className='text-gray-600 text-2xl line-through'>${product?.discountedPrice}</h1>
+                        <h1 className='text-3xl text-gray-800 font-bold'>${product?.discountedPrice}</h1>
+                        <h1 className='text-gray-600 text-2xl line-through'>${product?.originalPrice}</h1>
                         <button className='bg-red-600 text-white rounded-full px-3 py-1.5 font-medium'>Save ${product?.discount}</button>
                     </div>
                     <p className='text-gray-700 text-sm mb-5 mt-1'>Free shipping on order over $50</p>
@@ -171,7 +175,7 @@ const ProductView = () => {
                   </div>
                 {/* Add to cart button */}
                   <div className='mt-5'>
-                      <button onClick={addToCart} className='bg-yellow-400 rounded-sm text-white w-1/2 flex items-center justify-center py-2'>Add to cart</button>
+                      <button onClick={addToCart} className={`bg-yellow-400 rounded-sm text-white w-1/2 ${cartLoading ? 'cursor-not-allowed' : 'cursor-pointer'} flex items-center justify-center py-2`}>{cartLoading ? 'Adding...' : 'Add to cart'}</button>
                   </div>
 
                 </div>

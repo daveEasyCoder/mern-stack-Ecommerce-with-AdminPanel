@@ -117,10 +117,9 @@ export const getIndividualProduct = async (req, res) => {
       return res.status(404).json({success:false,message:"product not found"})
     }
     const productCategory = product.category
-    const productsubCategory = product.category
-    // console.log(productCategory);
-    // console.log(typeof(productCategory));
+    
      const relatedProducts = await Product.find({category:productCategory})
+     
    
     return res.status(200).json({ success: true, product,relatedProducts });
   } catch (error) {
@@ -214,7 +213,7 @@ try {
 export const getProductByCategory = async (req,res) => {
   try {
     const {category} = req.params
-    const products = await Product.find({category:category})
+    const products = await Product.find({category})
     return res.status(200).json({success:true,products})
   } catch (error) {
      console.log(error);

@@ -7,28 +7,23 @@ import { useNavigate } from "react-router-dom"
 import { useEcommerce } from "../context/EcommerceContext"
 const Cart = () => {
 
-    const {carts,setCarts} = useEcommerce()
+    const {carts,setCarts,user,setUser,url} = useEcommerce()
     const [error,setError] = useState("")
-    
 
     const navigate = useNavigate()
-
-        let user = localStorage.getItem("user")
-        if(user){
-            user = JSON.parse(user)
-        }
+    
     const getCart = async () => {
         try {
-           const res = await axios.get(`http://localhost:301/api/cart/get-cart/`,{withCredentials:true})
+           const res = await axios.get(`${url}/api/cart/get-cart/`,{withCredentials:true})
            if(res.data.success){
             setCarts(res.data.carts.items)
            }
         } catch (error) {
             if(error.response){
                 if(error.response.status === 401 || error.response.status === 403){
-                    localStorage.removeItem("user")
-                    navigate("/login")
                     console.log("you are not authorized")
+                    setUser(null)
+                    navigate("/login")
                 }
                if(error.response.data.message){
                 console.log(error.response.data.message);    
@@ -59,14 +54,14 @@ const Cart = () => {
        
         const deleteCartItem = async (id) => {
             try {
-                const res = await axios.delete(`http://localhost:301/api/cart/delete-cart-item/${id}`,{withCredentials:true})
+                const res = await axios.delete(`${url}/api/cart/delete-cart-item/${id}`,{withCredentials:true})
                 if(res.data.success){
                     setCarts(res.data.carts.items)    
                 }
             } catch (error) {
                if(error.response){
                   if(error.response.status === 401 || error.response.status === 403){
-                    localStorage.removeItem("user")
+                    setUser(null)
                     navigate("/login")
                     console.log("you are not authorized")
                 }
@@ -78,17 +73,15 @@ const Cart = () => {
 
         const updateQuantity = async (id,action) => {
             try {     
-               const res = await axios.post(`http://localhost:301/api/cart/update-quantity/${id}`,{action},{withCredentials:true})
+               const res = await axios.post(`${url}/api/cart/update-quantity/${id}`,{action},{withCredentials:true})
                if(res.data.success){
-                setCarts(res.data.carts.items)
-               
+                setCarts(res.data.carts.items)  
                }
             } catch (error) {
                  console.log(error);  
             }
         }
         
-
 
     return (
         <div className="flex gap-2 items-start flex-col pt-20 md:flex-row py-16 max-w-7xl w-full px-6 mx-auto">
@@ -110,7 +103,7 @@ const Cart = () => {
                     <div key={index} className="grid grid-cols-[2fr_1fr_1fr_1fr] text-gray-500 items-center text-sm md:text-base font-medium pt-3">
                         <div className="flex items-center md:gap-6 gap-3">
                             <div className="cursor-pointer w-24 h-24 flex items-center justify-center border border-gray-300 rounded overflow-hidden">
-                                <img className="max-w-full h-full object-cover"  src ={`http://localhost:301/productImage/${cart.productId.image[0]}`} />
+                                <img className="max-w-full h-full object-cover"  src ={`${url}/productImage/${cart.productId.image[0]}`} />
                                 
                             </div>
                             <div>

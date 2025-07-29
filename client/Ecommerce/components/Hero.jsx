@@ -3,7 +3,8 @@ import { FaStar } from 'react-icons/fa'
 import { FaTruck, FaShippingFast } from 'react-icons/fa';
 import { MdSecurity } from 'react-icons/md';
 import { FaHeadset, FaClock } from 'react-icons/fa';
-import personal from '../src/assets/personal.jfif'
+import heroImg from '../src/assets/hero-img.jpg'
+import { Link } from 'react-router-dom';
 const Hero = () => {
   return (
            <div className='relative min-h-screen pt-15'>
@@ -17,7 +18,7 @@ const Hero = () => {
                     <span className=' text-gray-700'>from 2,399+ reviews</span>
                 </div>
                 <div className='flex items-center gap-6 mt-6'>
-                    <button className='bg-black cursor-pointer rounded-sm text-white px-8 py-2'>Shop Now</button>
+                    <Link to = "/collections" className='bg-black cursor-pointer rounded-sm text-white px-8 py-2'>Shop Now</Link>
                     <button className='cursor-pointer rounded-sm text-gray-700 border border-gray-300 px-8 py-2'>View Catalog</button>
                 </div>
 
@@ -41,7 +42,7 @@ const Hero = () => {
 
             </div>
             <div className='md:w-1/2 relative shadow-2xl'>
-                <img className='w-full h-full object-cover rounded-sm shadow-lg' src={personal} alt="" />
+                <img className='w-full h-full object-cover rounded-sm shadow-lg' src={heroImg} alt="" />
                 <div className='px-3 py-4 rounded-sm absolute -bottom-4 -left-6 bg-white border border-gray-200 flex gap-2 items-center shadow-lg'>
                     <div className='w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center'> <FaClock /></div>
                     <div>

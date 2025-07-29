@@ -1,9 +1,12 @@
 
 import { useState,useEffect } from "react";
 import axios from 'axios'
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import {toastSuccess} from '../utility/toast.js'
+import { useEcommerce } from "../context/EcommerceContext.jsx";
 const EditProduct = () => {
 
+    const {url} = useEcommerce()
     const {id} = useParams()
     const [product,setProduct] = useState({
         name:"",
@@ -28,11 +31,12 @@ const EditProduct = () => {
     const [error,setError] = useState("")
     const [loading,setLoading] = useState(false)
    
+    const navigate = useNavigate()
         const getEachProduct =  async () => {
         try{
            
            setLoading(true)
-           const res = await axios.get(`http://localhost:301/api/product/get-each-product/${id}`)
+           const res = await axios.get(`${url}/api/product/get-each-product/${id}`)
            if(res.data.success){
              
               setProduct({
@@ -102,9 +106,6 @@ const EditProduct = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        // console.log(product);
-        // console.log(sizes);
-        // console.log(images);
         
         setError("")
         if(!existingImage || existingImage.length === 0){
@@ -138,15 +139,19 @@ const EditProduct = () => {
                     }
                 }
        
-                const res = await axios.put(`http://localhost:301/api/product/edit-product/${id}`,formData)
+                const res = await axios.put(`${url}/api/product/edit-product/${id}`,formData,{withCredentials:true})
                 if(res.data && res.data.success){
                   if(res.data.message){
-                     alert(res.data.message)
+                    toastSuccess(res.data.message)
                   }  
                 }
             } catch (error) {
               
                 if(error.response){
+                    if(error.response.status === 401 || error.response.status === 403){
+                    localStorage.removeItem("admin")
+                    navigate('/admin-login')
+                 }
                    if(error.response.data.message){
                     console.log(error.response.data.message)
                     setError(error.response.data.message)
@@ -171,7 +176,7 @@ const EditProduct = () => {
                         [0,1,2,3].map((i) => (
                             <label key={i} className="border border-gray-300 rounded-sm">
                                 <input onChange={(e) => handleImageChange(i,e.target.files[0])}  name={`image${i}`}   accept="image/*" type="file"  hidden />
-                                <img className="max-w-24 cursor-pointer" src={images[i] ? URL.createObjectURL(images[i]) : existingImage[i]  ? `http://localhost:301/productImage/${existingImage[i]}`  :  "https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/e-commerce/uploadArea.png"} alt="uploadArea" width={100} height={100} />
+                                <img className="max-w-24 cursor-pointer" src={images[i] ? URL.createObjectURL(images[i]) : existingImage[i]  ? `${url}/productImage/${existingImage[i]}`  :  "https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/e-commerce/uploadArea.png"} alt="uploadArea" width={100} height={100} />
                             </label>
                         ))
                     }
@@ -222,7 +227,7 @@ const EditProduct = () => {
                         {
                            sizes && sizes.length &&
                             sizes.map((s,index) => (
-                                <div>
+                                <div key={index}>
                                     <label htmlFor="">{s.size === "S" ? "Small" : s.size === "M" ? "Medium" : s.size === "L" ? "Large" : s.size === "X" ? "Large" : s.size === "XL" ? "Extra Large" : "XXL" }</label>
                                     <input className="w-full border border-gray-300 px-2 py-1.5 text-sm" placeholder="quantity" value={s.stock} onChange={(e) => handleSizeChange(index,e.target.value)} type="number"  />
                                 </div>

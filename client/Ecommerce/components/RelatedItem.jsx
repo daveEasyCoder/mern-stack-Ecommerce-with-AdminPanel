@@ -9,7 +9,7 @@ const RelatedItem = ({p}) => {
           <div className="sm:p-4">
             <div className="mb-4 h-60 overflow-hidden rounded-lg bg-gray-100">
               <img
-                src={`http://localhost:301/productImage/${p?.image[0]}`}
+                src={`${url}/productImage/${p?.image[0]}`}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform"
               />
             </div>

@@ -8,6 +8,12 @@ const EcommerceProvider = ({children}) => {
 
     const [products,setProducts] = useState([])
     const [carts,setCarts] = useState([])
+    const[myOrders,setMyOrders] = useState([])
+    const[user,setUser] = useState(null)
+    const[admin,setAdmin] = useState(null)
+
+    const url = "http://localhost:301"
+
 
     const getStoredProducts = () => {
         const storedProducts = localStorage.getItem("products")
@@ -20,7 +26,7 @@ const EcommerceProvider = ({children}) => {
         getStoredProducts()
     },[])
 
-    return <context.Provider value={{products,setProducts,carts,setCarts}}>
+    return <context.Provider value={{url,products,setProducts,carts,setCarts,myOrders,setMyOrders,user,setUser,admin,setAdmin}}>
         {children}
     </context.Provider>
 }

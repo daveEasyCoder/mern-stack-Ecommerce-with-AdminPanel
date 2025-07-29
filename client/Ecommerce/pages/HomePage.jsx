@@ -4,21 +4,29 @@ import Product from '../components/product';
 import { useEcommerce } from '../context/EcommerceContext';
 import axios from 'axios';
 import BestCategory from '../components/BestCategory';
-import CategoryView from './CategoryView';
-import { useNavigate } from 'react-router-dom';
+
 const HomePage = () => {
 
-  const {setProducts} = useEcommerce()
+  const {setProducts,setUser,url} = useEcommerce()
   const [error,setError] = useState("")
   const [loading,setLoading] = useState(false)
 
-  const navigate = useNavigate()
-
+  const getProfile = async () => {
+    try {
+     const res = await axios.get(`${url}/api/user/me`,{withCredentials:true})
+     if(res.data.success){
+      setUser(res.data.user)
+     }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
   const getProduct =  async () => {
     try{
        
        setLoading(true)
-       const res = await axios.get("http://localhost:301/api/product/get-product")
+       const res = await axios.get(`${url}/api/product/get-product`)
        if(res.data.success){
           setProducts(res.data.products)
           localStorage.setItem("products",JSON.stringify(res.data.products))
@@ -39,6 +47,7 @@ const HomePage = () => {
   }
 
   useEffect(() => {
+    getProfile()
     getProduct()
   },[])
   return (

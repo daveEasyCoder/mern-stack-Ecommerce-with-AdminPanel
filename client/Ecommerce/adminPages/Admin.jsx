@@ -1,10 +1,18 @@
 import React from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { LuPackage } from 'react-icons/lu';
+import { FaShoppingCart,FaEye, FaUser } from 'react-icons/fa'
+import axios from 'axios';
+import { useEcommerce } from '../context/EcommerceContext';
+import { useState } from 'react';
 
 const Admin = () => {
 
-    
+    const {setAdmin,url} = useEcommerce()
+    const navigate = useNavigate()
+
+    const [activeIndex,setActiveIndex] = useState(0)
+
     const dashboardicon = (
         <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" strokeLinejoin="round" strokeWidth="2" d="M4 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5Zm16 14a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2ZM4 13a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6Zm16-2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6Z" />
@@ -17,35 +25,48 @@ const Admin = () => {
         </svg>
     );
 
-    const chaticon = (
-        <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 9h5m3 0h2M7 12h2m3 0h5M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-6.616a1 1 0 0 0-.67.257l-2.88 2.592A.5.5 0 0 1 8 18.477V17a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
-        </svg>
-    );
-
     const sidebarLinks = [
-        { name: "Dashboard", path: "/", icon: dashboardicon },
+        { name: "Dashboard", path: "/admin", icon: dashboardicon },
         { name: "addProduct", path: "add-product", icon: overviewicon },
         { name: "Products", path: "product", icon: <LuPackage /> },
+        { name: "Orders", path: "admin-order", icon: <LuPackage /> },
+        { name: "Users", path: "users", icon: <FaUser /> },
     ];
+
+      const handleLogout = async () => {
+            try {
+                const res = await axios.post(`${url}/api/user/logout`,{},{withCredentials:true})
+                if(res.data.success){
+                    setAdmin(null)
+                    navigate("/login")
+                }
+            } catch (error) {
+                console.log(error);
+                
+            }
+        }
+
+  
 
   return (
     <div className=''>
         <div className=''>
-               <div className="fixed top-0 left-0 right-0 flex items-center justify-between px-4 md:px-8 border-b border-gray-300 py-3 bg-white transition-all duration-300">
-                <a href="/">
-                    <img className="h-9" src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/dummyLogo/dummyLogoColored.svg" alt="dummyLogoColored" />
-                </a>
+             <div className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between px-4 md:px-8 border-b border-gray-300 py-3 bg-white transition-all duration-300">
+                <div>
+                    <h1 className="text-2xl font-bold flex items-center gap-2 text-blue-600">
+                        <FaShoppingCart /> ShopSwift
+                    </h1>  
+                </div>
                 <div className="flex items-center gap-5 text-gray-500">
                     <p>Hi! Admin</p>
-                    <Link to ="/" className='border rounded-full text-sm px-4 py-1'>Logout</Link>
+                    <button onClick={handleLogout} className='border cursor-pointer rounded-full text-sm px-4 py-1'>Logout</button>
                 </div>
             </div>
-            <div className="fixed left-0 top-15  bg-white md:w-64 w-16 border-r h-[100vh] text-base border-gray-300 pt-4 flex flex-col transition-all duration-300">
+            <div className="fixed left-0 top-14 bg-white md:w-64 w-16 border-r h-[100vh] text-base border-gray-300 pt-4 flex flex-col transition-all duration-300">
                 {sidebarLinks.map((item, index) => (
-                    <Link to={item.path} key={index}
+                    <Link onClick={() => setActiveIndex(index)} to={item.path} key={index}
                         className={`flex items-center py-3 px-4 gap-3 
-                            ${index === 0 ? "border-r-4 md:border-r-[6px] bg-indigo-500/10 border-indigo-500 text-indigo-500"
+                            ${index === activeIndex ? "border-r-4 md:border-r-[6px] bg-indigo-500/10 border-indigo-500 text-indigo-500"
                                 : "hover:bg-gray-100/90 border-white text-gray-700"
                             }`
                         }
@@ -64,15 +85,3 @@ const Admin = () => {
 
 export default Admin
 
-
-
-
-const App = () => {
-
-
-    return (
-        <>
-         
-        </>
-    );
-};

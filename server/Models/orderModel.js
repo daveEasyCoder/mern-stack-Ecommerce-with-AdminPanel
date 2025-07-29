@@ -18,7 +18,9 @@ const orderSchema = new mongoose.Schema({
      },
      totalPrice:{type:Number,required:true},
      paymentMethod:{type:String},
-     status:{type:String,enum:["processing","shipped","delivered"],default:"processing"}
+     isPaid:{type:Boolean,default:false},
+     paidAt:{type:String,default:""},
+     status:{type:String,enum:["order-placed","shipped","delivered","cancelled"],default:"order-placed"}
 },{timestamps:true})
 
 const Order = mongoose.model("Order",orderSchema)

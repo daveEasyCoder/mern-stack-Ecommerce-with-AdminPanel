@@ -1,6 +1,4 @@
 import React from 'react'
-
-import personal from '../src/assets/personal.jfif'
 import ProductItem from './ProductItem';
 import { useEcommerce } from '../context/EcommerceContext';
 
@@ -23,7 +21,7 @@ const Product = () => {
 
            <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-2">
               {
-                products && products.length ? products.slice(0,6).map((product,index) => (
+                products && products.length ? products.map((product,index) => (
                   <ProductItem key={index} product={product} />
                 )) :
                 <div className='col-span-3  flex items-center justify-center h-[20vh]'>

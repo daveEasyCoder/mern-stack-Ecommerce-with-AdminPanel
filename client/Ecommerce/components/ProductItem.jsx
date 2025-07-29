@@ -16,7 +16,7 @@ const ProductItem = ({product}) => {
                 {/* Product Image */}
                 <div className="relative overflow-hidden">
                   <img
-                    src={`http://localhost:301/productImage/${product?.image[0]}`}
+                    src={`${url}/productImage/${product?.image[0]}`}
                     alt={product?.name}
                     width={300}
                     height={300}
@@ -60,8 +60,8 @@ const ProductItem = ({product}) => {
 
                   {/* Pricing */}
                   <div className="flex items-center mb-4">
-                    <span className="text-2xl font-bold text-gray-900">${product?.originalPrice}</span>
-                    <span className="text-lg text-gray-500 line-through ml-2">${product?.discountedPrice}</span>
+                    <span className="text-2xl font-bold text-gray-900">${product?.discountedPrice}</span>
+                    <span className="text-lg text-gray-500 line-through ml-2">${product?.originalPrice}</span>
                     <span className="text-sm text-green-600 font-semibold ml-2">
                       Save ${product?.discount.toFixed(2)}
                     </span>

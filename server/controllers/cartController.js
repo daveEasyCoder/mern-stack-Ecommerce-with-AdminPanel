@@ -5,7 +5,7 @@ export const addToCart = async (req,res) => {
     try {
         const {quantity,selectedSize} = req.body
         const productId = req.params.id
-        const userId = req.id
+        const userId = req.user._id
         if(!userId){
             console.log("user not found")
             return res.status(400).json({success:false,message:"user not found"})
@@ -44,7 +44,7 @@ export const addToCart = async (req,res) => {
 
 export const getCart = async (req,res) => {
     try {
-        const userId = req.id
+        const userId = req.user._id
         if(!userId) return res.status(400).json({success:false,message:"user not found"})
         const carts = await Cart.findOne({userId}).populate({path:"items.productId"})
         if(!carts){
@@ -59,7 +59,7 @@ export const getCart = async (req,res) => {
 
 export const deleteCartItem = async (req,res) => {
     try {
-        const userId = req.id
+        const userId = req.user._id
         const cartItemId = req.params.id
         const cart = await Cart.findOne({userId:userId})
         if(!cart){
@@ -83,7 +83,7 @@ export const updateQuantity = async (req,res) => {
     try {
         const {id} = req.params
         const {action} = req.body
-        const userId = req.id
+        const userId = req.user._id
         const cart = await Cart.findOne({userId})
         if(!cart){
             return res.status(400).json({success:false,message:"Cart not found"})

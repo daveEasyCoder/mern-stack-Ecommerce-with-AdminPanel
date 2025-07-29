@@ -1,25 +1,27 @@
 import React,{ useEffect,useState } from 'react'
-import { useEcommerce } from '../context/EcommerceContext';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { MdEdit, MdDelete } from 'react-icons/md';
 
 
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEcommerce } from '../context/EcommerceContext';
 const AdminProduct = () => {
 
+     const {admin,url} = useEcommerce()
      const [products,setProducts] = useState([])
      const[loading,setLoading] = useState(false)
      const [error,setError] = useState("")
      const [showMenu,setShowMenu] = useState(false)
      const [showMenuIndex,setShowMenuIndex] = useState(null)
+     
+     const navigate = useNavigate()
+
       const getProduct =  async () => {
-    try{
-       
+    try{  
        setLoading(true)
-       const res = await axios.get("http://localhost:301/api/product/get-product")
+       const res = await axios.get(`${url}/api/product/get-product`)
        if(res.data.success){
-          console.log(res.data);
           setProducts(res.data.products)
           setLoading(false)
        }
@@ -38,15 +40,24 @@ const AdminProduct = () => {
     }
   }
 
+  const checkAdmin = () => {
+    if(!admin || !admin._id){
+       navigate("/admin-login")
+     }
+  }
   useEffect(() => {
+    checkAdmin()
     getProduct()
   },[])
 
+  const calculateStock = (product) => {
+    const stock = product.sizes.reduce((acc,size) => (acc + size.stock),0)
+    return stock
+  }
+
   const handleShowMenu = (id) => {
     setShowMenu(prev => !prev)
-    setShowMenuIndex(id)
-
-  
+    setShowMenuIndex(id) 
   }
 
   
@@ -75,13 +86,13 @@ const AdminProduct = () => {
                                 <tr key={index} className="border-t border-gray-500/20">
                                     <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
                                         <div className="border border-gray-300 rounded overflow-hidden">
-                                            <img  src={`http://localhost:301/productImage/${product?.image[0]}`} alt="Product" className="w-16" />
+                                            <img  src={`${url}/productImage/${product?.image[0]}`} alt="Product" className="w-16" />
                                         </div>
                                         <span className="truncate max-sm:hidden w-full">{product.name}</span>
                                     </td>
                                     <td className="px-4 py-3">{product.category}</td>
                                     <td className="px-4 py-3 max-sm:hidden">${product.originalPrice}</td>
-                                    <td className="px-4 py-3">4</td>
+                                    <td className="px-4 py-3">{calculateStock(product)}</td>
                                     <td className="px-4 py-3 relative">
                                         <BsThreeDotsVertical onClick={() => handleShowMenu(index)} className="text-lg cursor-pointer text-gray-600 hover:text-black" />
                                           {showMenu && index === showMenuIndex && (

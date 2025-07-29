@@ -2,15 +2,22 @@ import React, { useEffect, useState } from 'react'
 import ProductItem from '../components/ProductItem'
 import { useEcommerce } from '../context/EcommerceContext'
 import RelatedItem from '../components/RelatedItem'
+import { useNavigate } from 'react-router-dom'
 
 
 const Collections = () => {
-    const {products} = useEcommerce()
+    const {products,user} = useEcommerce()
     const [filteredCategory,setFilteredCategory] = useState([])
      
     const [category,setCategory] = useState([])
     const [subCategory,setSubcategory] = useState([])
-     
+    const navigate = useNavigate()
+
+    useEffect(() => {
+       if(!user || !user._id){
+      navigate("/login")
+    }
+    })
     const handleCategoryChange = (e) => {
         if(category.includes(e.target.value)){
           setCategory(prev => prev.filter(item => item !== e.target.value))

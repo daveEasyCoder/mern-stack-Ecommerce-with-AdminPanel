@@ -4,19 +4,21 @@ import Loader from '../components/Skeleton'
 import axios from 'axios'
 import ProductItem from '../components/ProductItem'
 import NotFound from '../components/NotFound'
+import { useEcommerce } from '../context/EcommerceContext'
+
 
 const CategoryView = () => {
     const {category} = useParams()
+    const {url} = useEcommerce()
     const [loading,setLoading] = useState(false)
     const [error,setError] = useState("")
     const [products,setProducts] = useState([])
-    const navigate = useNavigate()
  
      const getProduct =  async () => {
       try{
         
         setLoading(true)
-        const res = await axios.get(`http://localhost:301/api/product/get-product-category/${category}`)
+        const res = await axios.get(`${url}/api/product/get-product-category/${category}`)
         if(res.data.success){
             setProducts(res.data.products)
             setLoading(false)
@@ -45,9 +47,10 @@ const CategoryView = () => {
    if(!products || products.length === 0) return <NotFound error = {error}/>
   return (
     <div className='pt-25'>
-        <div className='max-w-5xl mx-auto h-60 flex flex-col px-5 text-center items-center justify-center rounded-sm mb-9 bg-gray-100'>
-              <h1 className='text-3xl font-bold px-2 mb-2'>Category: <span className='text-yellow-500'>{category}</span></h1>
-              <p className='w-[70%] text-sm'>
+        <div className='max-w-6xl mx-auto h-60 grid grid-cols-2  px-5 text-center items-center justify-between rounded-sm mb-9 bg-gray-100'>
+           {/* <div>
+               <h1 className='text-3xl font-bold px-2 mb-2'>Category: <span className='text-yellow-500'>{category}</span></h1>
+              <p className='text-sm'>
                 {category === "Men" ?
                  'Men ipsum dolor sit amet consectetur adipisicing elit. Et sunt!':
                  category === "Women" ? 'Women ipsum dolor sit amet consectetur adipisicing elit. Et sunt!':
@@ -55,9 +58,13 @@ const CategoryView = () => {
                  category === "Accessories" ? "Accessories ipsum dolor sit amet consectetur adipisicing elit. Et sunt!":""
                 }
               </p>
+           </div>
+           <div>
+             <img className='w-40 h-40' src={img1} alt="" />
+           </div> */}
         </div>
 
-        <div className='max-w-5xl mx-auto'>
+        <div className='max-w-6xl mx-auto'>
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 px-2">
               {  
                 products.map((product,index) => (

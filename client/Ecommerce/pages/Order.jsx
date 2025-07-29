@@ -2,10 +2,11 @@ import React from 'react'
 import { useEcommerce } from '../context/EcommerceContext'
 import { useState } from 'react'
 import axios from 'axios'
+import { toastError, toastSuccess } from '../utility/toast'
 
 const Order = () => {
 
-    const {carts} = useEcommerce()
+    const {carts,url} = useEcommerce()
     const [shippingAddress,setShippingAddress] = useState({
          fullname:"",
          address:"",
@@ -43,14 +44,25 @@ const Order = () => {
              alert("Online method not supported Yet")
        }else{
          try {  
-             const res = await axios.post(`http://localhost:301/api/order/place-order`,{shippingAddress,paymentMethod},{withCredentials:true})
+             const res = await axios.post(`${url}/api/order/place-order`,{shippingAddress,paymentMethod},{withCredentials:true})
              if(res.data.success){
-                alert(res.data.message)
+                toastSuccess("Order placed successfully")
+                setShippingAddress({
+                        fullname:"",
+                        address:"",
+                        city:"",
+                        postalCode:""
+                })
              }
          } catch (error) {
             if(error.response){
+                if(error.response.status === 401 || error.response.status === 403){
+                    console.log("You are not authorized")
+                    setUser(null)
+                    navigate("/login")
+                }
                 if(error.response.data && error.response.data.message){
-                    alert(error.response.data.message)
+                    toastError(error.response.data.message)
                     console.log(error.response.data.message);
                 }
             }else{

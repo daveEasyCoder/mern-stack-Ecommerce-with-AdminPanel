@@ -1,8 +1,13 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from 'axios'
+import { toastSuccess } from "../utility/toast";
+import { useNavigate } from "react-router-dom";
+import { useEcommerce } from "../context/EcommerceContext";
+
 const AddProduct = () => {
 
+    const {admin,url} = useEcommerce()
     const [product,setProduct] = useState({
         name:"",
         originalPrice:0,
@@ -12,6 +17,7 @@ const AddProduct = () => {
         category:"",
         subCategory:""
     })
+
     const [images,setImages] = useState({
         image1:'',
         image2:'',
@@ -23,10 +29,17 @@ const AddProduct = () => {
         {size:"M",stock:0},
         {size:"L",stock:0},
         {size:"XL",stock:0},
-        {size:"XXL",stock:0},
+        {size:"XXL",stock:0}
     ]);
-
+    const navigate = useNavigate()
     const [error,setError] = useState("")
+
+   useEffect(() => {
+       if(!admin || !admin._id){
+        navigate("/admin-login")
+       }
+   },[])
+
     const handleImageChange = (e) => {
           setImages(prev => ({...prev, [e.target.name]:e.target.files[0]}))
     }
@@ -85,16 +98,19 @@ const AddProduct = () => {
                 if(images.image4){
                     formData.append("image",images.image4)
                 }
-                
-                const res = await axios.post("http://localhost:301/api/product/add-product",formData)
+       
+                const res = await axios.post(`${url}/api/product/add-product`,formData,{withCredentials:true})
                 if(res.data && res.data.success){
-                   alert(res.data.message)
-                    console.log(res.data);
+                   toastSuccess("Product Added successfully.")
                     
                 }
             } catch (error) {
               
                 if(error.response){
+                    if(error.response.status === 401 || error.response.status === 403){
+                        localStorage.removeItem("user")
+                        navigate("/admin-login")
+                    }
                    if(error.response.data.message){
                     setError(error.response.data.message)
                    }
@@ -107,6 +123,24 @@ const AddProduct = () => {
             }     
         }
     }
+
+    useEffect(() => {
+        if(product.subCategory === 'Shoes'){
+            setSizes([ 
+                {size:"38",stock:0},
+                {size:"39",stock:0},
+                {size:"40",stock:0},
+                {size:"41",stock:0},
+                {size:"42",stock:0}])
+        }else{
+            setSizes([{size:"S",stock:0},
+                    {size:"M",stock:0},
+                    {size:"L",stock:0},
+                    {size:"XL",stock:0},
+                    {size:"XXL",stock:0}
+                ])
+        }
+    },[product.subCategory])
 
     return (
         <div className="pt-15 flex flex-col justify-between ml-16 md:ml-60 bg-white">
@@ -147,7 +181,7 @@ const AddProduct = () => {
                     <label className="text-base font-medium" htmlFor="category">Category</label>
                     <select onChange={handleChange} id="category" name="category" value={product.category} className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40">
                         <option value="">Select Category</option>
-                        {[{ name: 'Men' }, { name: 'Women' }, { name: 'Kids' },{ name: 'Accessories' }].map((item, index) => (
+                        {[{ name: 'Men' }, { name: 'Women' }, { name: 'Kids' }].map((item, index) => (
                             <option key={index} value={item.name}>{item.name}</option>
                         ))}
                     </select>
@@ -175,9 +209,12 @@ const AddProduct = () => {
                     <div className="grid grid-cols-2 gap-4 mt-2">
                         {
                             sizes.map((s,index) => (
-                                <div>
-                                    <label htmlFor="">{s.size === "S" ? "Small" : s.size === "M" ? "Medium" : s.size === "L" ? "Large" : s.size === "X" ? "Large" : s.size === "XL" ? "Extra Large" : "XXL" }</label>
-                                    <input className="w-full border border-gray-300 px-2 py-1.5 text-sm" placeholder="quantity" onChange={(e) => handleSizeChange(index,e.target.value)} type="number"  />
+                                <div key={index}>
+                                    {
+                                      product.subCategory === 'Shoes' ? <label htmlFor="">{s.size === "38" ? "38" : s.size === "39" ? "39" : s.size === "40" ? "40" : s.size === "41" ? "41" : s.size }</label>:
+                                       <label htmlFor="">{s.size === "S" ? "Small" : s.size === "M" ? "Medium" : s.size === "L" ? "Large" : s.size === "XL" ? "Extra Large" : "XXL" }</label>
+                                    }
+                                    <input className="w-full border border-gray-300 px-2 py-1.5 text-sm" value={s.stock} min={0} placeholder="quantity" onChange={(e) => handleSizeChange(index,e.target.value)} type="number"  />
                                 </div>
                             ))
                         }
@@ -187,11 +224,11 @@ const AddProduct = () => {
                  <div className="flex items-center gap-5 flex-wrap">
                     <div className="flex-1 flex flex-col gap-1 w-32">
                         <label className="text-base font-medium" htmlFor="product-price">Product Price</label>
-                        <input onChange={handleChange} name="originalPrice" value={product.originalPrice} id="" type="number" placeholder="0" className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40" required />
+                        <input onChange={handleChange} name="originalPrice" value={product.originalPrice} min={0} id="" type="number"  className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40" required />
                     </div>
                     <div className="flex-1 flex flex-col gap-1 w-32">
                         <label className="text-base font-medium" htmlFor="offer-price">Offer Price</label>
-                        <input onChange={handleChange} id="offer-price" name="discountedPrice" value={product.discountedPrice} type="number" placeholder="0" className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40" required />
+                        <input onChange={handleChange} id="offer-price" name="discountedPrice" value={product.discountedPrice} min={0} type="number" className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40" required />
                     </div>
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
