@@ -12,7 +12,7 @@ const EcommerceProvider = ({children = null}) => {
     const[user,setUser] = useState(null)
     const[admin,setAdmin] = useState(null)
 
-    const url = "http://localhost:301"
+    const url = "https://shopswift-frvx.onrender.com"
 
 
     const getStoredProducts = () => {
