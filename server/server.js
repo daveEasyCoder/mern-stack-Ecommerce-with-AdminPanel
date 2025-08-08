@@ -11,7 +11,11 @@ import adminRoutes from './routes/adminRoutes.js'
 dotenv.config();
 const app = express();
 
-const allowedOrigins = ['https://react-fronted-ecommerce.vercel.app'];
+const allowedOrigins = [
+  'https://react-fronted-ecommerce.vercel.app',
+  'https://ecommerce-frontend-9846wid5p-daveeasycoders-projects.vercel.app',
+  'https://ecommerce-frontend-git-main-daveeasycoders-projects.vercel.app'
+];
 app.use(cors({
   origin: allowedOrigins,
   credentials: true,
