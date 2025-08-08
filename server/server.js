@@ -12,9 +12,10 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: 'https://react-fronted-ecommerce.vercel.app/',
-  credentials: true 
+  origin: 'https://react-fronted-ecommerce.vercel.app',
+  credentials: true
 }));
+
 app.use(express.json())
 app.use(express.static('uploads'))
 app.use(cookieParser())
