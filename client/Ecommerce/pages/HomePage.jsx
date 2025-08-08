@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Hero from '../components/Hero';
-import Product from '../components/product';
+import Product from '../components/Product';
 import { useEcommerce } from '../context/EcommerceContext';
 import axios from 'axios';
 import BestCategory from '../components/BestCategory';
